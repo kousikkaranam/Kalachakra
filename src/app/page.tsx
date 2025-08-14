@@ -161,7 +161,7 @@ export default function HomePage() {
           Welcome to the Kalachakra - The Vedic Cosmology Atlas
         </h2>
         <p className="text-amber-700 max-w-2xl mx-auto">
-          Explore the cosmic realms (lokas) and time cycles (yugas) of Vedic cosmology.
+          Explore the cosmic realms (lokas) and time cycles (yugas) of Vedic cosmology.<br/>
           Toggle between mythic and modern interpretations using the switch above.
         </p>
         <p className="text-sm text-amber-600 mt-2">
