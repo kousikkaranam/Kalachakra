@@ -4,6 +4,7 @@
 import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import { useAppStore } from '@/stores/app-store';
+import { useRouter } from 'next/navigation';
 
 interface TimelineBand {
   id: string;
@@ -30,6 +31,7 @@ export function TimelineExplorer() {
   const [timelineData, setTimelineData] = useState<TimelineData | null>(null);
   const [loading, setLoading] = useState(true);
   const { currentLayer, setSelectedEntityId, setSidebarOpen } = useAppStore();
+  const router = useRouter();
 
   // Fetch timeline data
   useEffect(() => {
@@ -136,11 +138,14 @@ export function TimelineExplorer() {
         d3.select(this).attr('opacity', 1);
         tooltip.transition().duration(200).style('opacity', 0);
       })
+      // .on('click', function(event, d) {
+      //   setSelectedEntityId(d.id);
+      //   setSidebarOpen(true);
+      // });
       .on('click', function(event, d) {
-        setSelectedEntityId(d.id);
-        setSidebarOpen(true);
+        router.push(`/entities/${d.slug}`);
       });
-
+    
     // Add labels
     g.selectAll('.yuga-label')
       .data(timelineData.data)
