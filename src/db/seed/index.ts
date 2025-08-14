@@ -2,11 +2,15 @@
 import { config } from 'dotenv';
 import { db } from '@/lib/db';
 import { entities, sources, entityDetails } from '@/db/schema';
+import { InferInsertModel } from 'drizzle-orm';
 
 // Load environment variables from .env.local
 config({ path: '.env.local' });
 
-const lokas = [
+type NewEntity = InferInsertModel<typeof entities>;
+
+
+const lokas: NewEntity[] = [
   {
     type: 'LOKA' as const,
     slug: 'satya-loka',
@@ -55,6 +59,65 @@ const lokas = [
     nameIast: 'Bhūloka',
     nameDevanagari: 'भूलोक',
     summary: 'Earth realm, the physical world we inhabit',
+  },
+
+  // Lower 7 (Adho Lokas / Patalas) - New additions
+  {
+    type: 'LOKA' as const,
+    slug: 'atala-loka',
+    nameIast: 'Atalaloka',
+    nameDevanagari: 'अतललोक',
+    summary:
+      'Realm of illusion and material pleasures, inhabited by demons and nagas.',
+  },
+  {
+    type: 'LOKA' as const,
+    slug: 'vitala-loka',
+    nameIast: 'Vitalaloka',
+    nameDevanagari: 'वितललोक',
+    summary:
+      'Realm of gold and precious metals, associated with Lord Shiva as Hatakeshvara.',
+  },
+  {
+        type: 'LOKA' as const,
+
+    slug: 'sutala-loka',
+    nameIast: 'Sutalaloka',
+    nameDevanagari: 'सुतललोक',
+    summary:
+      'Realm of Bali Maharaja, protected from Indra, known for its splendor.',
+  },
+  {
+    type: 'LOKA' as const,
+
+    slug: 'talatala-loka',
+    nameIast: 'Talatalaloka',
+    nameDevanagari: 'तलातललोक',
+    summary: 'Realm governed by Maya Danava, architect of the demons.',
+  },
+  {
+    type: 'LOKA' as const,
+
+    slug: 'mahatala-loka',
+    nameIast: 'Mahatalaloka',
+    nameDevanagari: 'महातललोक',
+    summary: 'Realm of many-hooded serpents and fierce beings.',
+  },
+  {
+    type: 'LOKA' as const,
+
+    slug: 'rasatala-loka',
+    nameIast: 'Rasatalaloka',
+    nameDevanagari: 'रसातललोक',
+    summary: 'Realm of daityas and danavas, enemies of the devas.',
+  },
+  {
+    type: 'LOKA' as const,
+
+    slug: 'patala-loka',
+    nameIast: 'Patalaloka',
+    nameDevanagari: 'पाताललोक',
+    summary: 'Lowest realm, abode of nagas and serpents, rich in jewels.',
   },
 ];
 
@@ -120,7 +183,7 @@ async function seedDatabase() {
 
     // Insert lokas
     console.log('🏔️ Inserting lokas...');
-    const insertedLokas = await db.insert(entities).values(lokas).returning();
+    const insertedLokas = await db.insert(entities).values(lokas).onConflictDoNothing();
 
     // Insert yugas  
     console.log('⏰ Inserting yugas...');

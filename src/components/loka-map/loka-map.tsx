@@ -4,7 +4,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Text, Sphere, Html } from '@react-three/drei';
-import { useRouter } from 'next/navigation';
 import { useAppStore } from '@/stores/app-store';
 import * as THREE from 'three';
 
@@ -42,13 +41,13 @@ function LokaSphere({ loka, onClick }: { loka: LokaEntity; onClick: (slug: strin
         />
       </Sphere>
       
-      <Text
+      {/* <Text
         position={[loka.size + 1, 0, 0]}
         fontSize={0.5}
         color="#7c2d12"
         anchorX="left"
         anchorY="middle"
-        font="/fonts/Inter-Bold.woff"
+        font="/fonts/helvetiker_regular.typeface.json"  // Use this fallback (download from Three.js repo or convert your own)
       >
         {loka.nameIast}
       </Text>
@@ -60,10 +59,11 @@ function LokaSphere({ loka, onClick }: { loka: LokaEntity; onClick: (slug: strin
           color="#92400e"
           anchorX="left"
           anchorY="middle"
+          font="/fonts/helvetiker_regular.typeface.json"  // Replace with a Devanagari-supporting JSON font if needed
         >
           {loka.nameDevanagari}
         </Text>
-      )}
+      )} */}
 
       {hovered && (
         <Html position={[loka.size + 1, -1.5, 0]} style={{ width: '200px' }}>
@@ -87,24 +87,28 @@ function CosmicAxis() {
       </mesh>
       
       {/* Axis Label */}
-      <Text
+      {/* <Text
         position={[0, 11, 0]}
         fontSize={0.6}
         color="#7c2d12"
         anchorX="center"
         anchorY="bottom"
+        font="/fonts/helvetiker_regular.typeface.json"
       >
         Mount Meru
-      </Text>
+      </Text> */}
     </group>
   );
 }
 
 export function LokaMap() {
-  const router = useRouter();
-  const { currentLayer } = useAppStore();
+  const { currentLayer, setSelectedEntityId } = useAppStore();
   const [lokas, setLokas] = useState<LokaEntity[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    console.log('Fetched lokas:', lokas);  // Check if data is loaded
+  }, [lokas]);
 
   useEffect(() => {
     async function fetchLokas() {
@@ -135,6 +139,9 @@ export function LokaMap() {
           }) as LokaEntity[];
           
           setLokas(mappedLokas);
+          console.log('State updated with lokas:', mappedLokas);  // Confirm setLokas ran
+        } else {
+          console.error('API fetch failed:', data);
         }
       } catch (error) {
         console.error('Failed to fetch lokas:', error);
@@ -147,7 +154,10 @@ export function LokaMap() {
   }, [currentLayer]);
 
   const handleLokaClick = (slug: string) => {
-    router.push(`/entities/${slug}`);
+    const match = lokas.find(l => l.slug === slug);
+    if (match) {
+      setSelectedEntityId(match.id);
+    }
   };
 
   if (loading) {
@@ -158,16 +168,27 @@ export function LokaMap() {
     );
   }
 
+  if (lokas.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-red-600">No realms found - check API</div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full h-96 bg-gradient-to-b from-blue-100 to-amber-50 rounded-lg border border-amber-200 overflow-hidden">
-      <Canvas
-        camera={{ position: [8, 2, 8], fov: 60 }}
-        gl={{ antialias: true }}
-      >
+      <Canvas camera={{ position: [8, 2, 8], fov: 60 }} gl={{ antialias: true }}>
         <ambientLight intensity={0.6} />
         <directionalLight position={[10, 10, 5]} intensity={1} />
         <pointLight position={[0, 10, 0]} intensity={0.5} color="#FFD700" />
         
+        {/* Hardcoded test sphere - Comment out once working */}
+        <mesh position={[0, 0, 0]}>
+          <sphereGeometry args={[1, 32, 32]} />
+          <meshStandardMaterial color="hotpink" />
+        </mesh>
+
         <CosmicAxis />
         
         {lokas.map((loka) => (
